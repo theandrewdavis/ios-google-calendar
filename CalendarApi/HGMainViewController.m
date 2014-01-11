@@ -8,11 +8,11 @@
 
 #import "HGMainViewController.h"
 #import "AFNetworking.h"
-#import "GTLCalendar.h"
 
 static NSString *kMainViewCellIdentifier = @"HGMainViewControllerCell";
 
 @interface HGMainViewController ()
+@property (nonatomic, strong) NSArray *events;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
@@ -22,8 +22,6 @@ static NSString *kMainViewCellIdentifier = @"HGMainViewControllerCell";
 {
     self = [super init];
     if (self) {
-//        self.calendarService.APIKey = @"AIzaSyBNDX9ZvvrzcY75UEKuUpewPOwSn9BB5gs";
-        
         // Set up the "pull to refresh" control.
         self.refreshControl = [[UIRefreshControl alloc] init];
         self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Updating calendar"];
@@ -46,20 +44,24 @@ static NSString *kMainViewCellIdentifier = @"HGMainViewControllerCell";
 // Start an asynchronous fetch of calendar events. Shows a pull-down spinner while updating and shows an error notification in the spnner window if updating fails.
 - (void)updateEntries
 {
-    GTLQueryCalendar *query = [GTLQueryCalendar queryForEventsListWithCalendarId:@"uqug2vcr34i6ao749n5vfb8vks@group.calendar.google.com"];
-    [self.calendarService executeQuery:query completionHandler:^(GTLServiceTicket *ticket, id events, NSError *error) {
-        if (error == nil) {
-            [self updateSuccess:events];
-        } else {
-            [self updateFailure];
-        }
+    NSString *apiKey = @"AIzaSyBNDX9ZvvrzcY75UEKuUpewPOwSn9BB5gs";
+    NSString *baseUrl = @"https://www.googleapis.com/calendar/v3/calendars/uqug2vcr34i6ao749n5vfb8vks@group.calendar.google.com/events?key=";
+    NSString *fullUrl = [baseUrl stringByAppendingString:apiKey];
+
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    [manager GET:fullUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [self updateSuccess:responseObject];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [self updateFailure];
     }];
 }
 
-- (void)updateSuccess:(GTLCalendarEvents *)events
+- (void)updateSuccess:(NSDictionary *)apiResponse
 {
-    NSLog(@"Update success!");
-    self.events = events;
+    self.events = [apiResponse[@"items"] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id event, NSDictionary *bindings) {
+        return ((NSString *)event[@"summary"]).length > 0 && ![((NSString *)event[@"status"]) isEqualToString:@"cancelled"];
+    }]];
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
 }
@@ -79,8 +81,7 @@ static NSString *kMainViewCellIdentifier = @"HGMainViewControllerCell";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"%d items!", self.events.items.count);
-    return self.events.items.count;
+    return (self.events) ? self.events.count : 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -89,9 +90,7 @@ static NSString *kMainViewCellIdentifier = @"HGMainViewControllerCell";
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMainViewCellIdentifier];
     }
-    GTLCalendarEvent *event = (GTLCalendarEvent *)self.events.items[indexPath.row];
-    cell.textLabel.text = event.summary;
-//    NSLog(@"Property %@", event.descriptionProperty);
+    cell.textLabel.text = self.events[indexPath.row][@"summary"];
 
     return cell;
 }
