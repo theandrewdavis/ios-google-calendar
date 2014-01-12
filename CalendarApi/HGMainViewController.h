@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HGRefreshTableViewController.h"
 
-@interface HGMainViewController : UITableViewController
+@interface HGMainViewController : HGRefreshTableViewController
 
 @end
