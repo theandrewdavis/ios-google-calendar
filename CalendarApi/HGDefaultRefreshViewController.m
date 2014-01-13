@@ -17,8 +17,7 @@ static NSString *kDefaultRefreshCellIdentifier = @"HGDefaultRefreshViewControlle
 
 @implementation HGDefaultRefreshViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     // In iOS 7+, don't extend the table view underneath the navigation bar.
@@ -35,8 +34,7 @@ static NSString *kDefaultRefreshCellIdentifier = @"HGDefaultRefreshViewControlle
 
 // Programmatically call the "pull to refresh" control. Only appears to work in the viewDidAppear method.
 // See http://stackoverflow.com/questions/17930730/uirefreshcontrol-on-viewdidload
-- (void) viewDidAppear:(BOOL)animated
-{
+- (void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear: animated];
     
     // Programmatically call the "pull to refresh" control.
@@ -45,8 +43,7 @@ static NSString *kDefaultRefreshCellIdentifier = @"HGDefaultRefreshViewControlle
     [self updateCalendar];
 }
 
-- (void)updateCalendar
-{
+- (void)updateCalendar {
     NSString *apiKey = @"AIzaSyBNDX9ZvvrzcY75UEKuUpewPOwSn9BB5gs";
     NSString *baseUrl = @"https://www.googleapis.com/calendar/v3/calendars/uqug2vcr34i6ao749n5vfb8vks@group.calendar.google.com/events?key=";
     NSString *fullUrl = [baseUrl stringByAppendingString:apiKey];
@@ -59,32 +56,26 @@ static NSString *kDefaultRefreshCellIdentifier = @"HGDefaultRefreshViewControlle
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         [self.refreshControl endRefreshing];
     }];
-
 }
 
-- (void)updateSuccess:(NSDictionary *)apiResponse
-{
+- (void)updateSuccess:(NSDictionary *)apiResponse {
     self.events = [apiResponse[@"items"] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id event, NSDictionary *bindings) {
         return ((NSString *)event[@"summary"]).length > 0 && ![((NSString *)event[@"status"]) isEqualToString:@"cancelled"];
     }]];
     [self.tableView reloadData];
-    [self.refreshControl endRefreshing];
 }
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return (self.events) ? self.events.count : 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kDefaultRefreshCellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kDefaultRefreshCellIdentifier];

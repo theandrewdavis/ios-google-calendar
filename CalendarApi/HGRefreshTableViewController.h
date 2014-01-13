@@ -19,9 +19,9 @@ typedef enum {
 @property (strong, nonatomic) UIImage *successImage;
 @property (strong, nonatomic) UIImage *errorImage;
 
-- (void)text:(NSString *)text forRefreshState:(HGRefreshState)state;
+- (void)setText:(NSString *)text forRefreshState:(HGRefreshState)state;
 - (void)setRefreshTarget:(id)target action:(SEL)action;
-- (void)beginRefresh;
-- (void)endRefreshSuccess;
-- (void)endRefreshError;
+- (void)beginRefreshing;
+- (void)endRefreshingSuccess;
+- (void)endRefreshingError;
 @end
