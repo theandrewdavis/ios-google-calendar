@@ -1,14 +1,14 @@
 //
-//  HGAppDelegate.h
-//  CalendarApi
+//  ADAppDelegate.h
+//  GoogleCalendarDemo
 //
-//  Created by Andrew Davis on 1/6/14.
+//  Created by Andrew Davis on 1/12/14.
 //  Copyright (c) 2014 Andrew Davis. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface HGAppDelegate : UIResponder <UIApplicationDelegate>
+@interface ADAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

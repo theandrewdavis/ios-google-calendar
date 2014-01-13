@@ -1,43 +1,34 @@
 //
-//  HGMainViewController.m
-//  CalendarApi
+//  ADCalendarViewController.m
+//  GoogleCalendarDemo
 //
-//  Created by Andrew Davis on 1/7/14.
+//  Created by Andrew Davis on 1/13/14.
 //  Copyright (c) 2014 Andrew Davis. All rights reserved.
 //
 
-#import "HGMainViewController.h"
+#import "ADCalendarViewController.h"
 #import "AFNetworking.h"
-#import "HGDefaultRefreshViewController.h"
 
-static NSString *kCustomRefreshCellIdentifier = @"HGMainViewControllerCell";
+static NSString *kCustomRefreshCellIdentifier = @"ADCalendarViewControllerCell";
 
-@interface HGMainViewController ()
+@interface ADCalendarViewController ()
 @property (nonatomic, strong) NSArray *events;
 @end
 
-@implementation HGMainViewController
+@implementation ADCalendarViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.events = @[@"Summary Number One", @"Summary Number Two", @"Summary Number Three"];
-    
+
     // In iOS 7+, don't extend the table view underneath the navigation bar.
     if ([self respondsToSelector:@selector(edgesForExtendedLayout)]) {
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
-    
-    // Create button for the next view in the navigation controller hierarchy.
+
     self.navigationItem.title = @"Custom";
-    UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Default" style:UIBarButtonItemStylePlain target:self action:@selector(nextView)];
-    self.navigationItem.rightBarButtonItem = rightButton;
-    
     [self setRefreshTarget:self action:@selector(updateCalendar)];
     [self beginRefreshing];
-}
 
-- (void)nextView {
-    [self.navigationController pushViewController:[[HGDefaultRefreshViewController alloc] init] animated:YES];
 }
 
 #pragma mark - Google Calendar updates
@@ -80,7 +71,7 @@ static NSString *kCustomRefreshCellIdentifier = @"HGMainViewControllerCell";
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCustomRefreshCellIdentifier];
     }
-    cell.textLabel.text = self.events[indexPath.row];
+    cell.textLabel.text = self.events[indexPath.row][@"summary"];
 
     return cell;
 }
