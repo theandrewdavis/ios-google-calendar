@@ -1,22 +1,21 @@
 //
-//  HGMainViewController.m
+//  HGDefaultRefreshViewController.m
 //  CalendarApi
 //
-//  Created by Andrew Davis on 1/7/14.
+//  Created by Andrew Davis on 1/12/14.
 //  Copyright (c) 2014 Andrew Davis. All rights reserved.
 //
 
-#import "HGMainViewController.h"
-#import "AFNetworking.h"
 #import "HGDefaultRefreshViewController.h"
+#import "AFNetworking.h"
 
-static NSString *kCustomRefreshCellIdentifier = @"HGMainViewControllerCell";
+static NSString *kDefaultRefreshCellIdentifier = @"HGDefaultRefreshViewControllerCellIdentifier";
 
-@interface HGMainViewController ()
-@property (nonatomic, strong) NSArray *events;
+@interface HGDefaultRefreshViewController ()
+@property (strong, nonatomic) NSArray *events;
 @end
 
-@implementation HGMainViewController
+@implementation HGDefaultRefreshViewController
 
 - (void)viewDidLoad
 {
@@ -27,36 +26,40 @@ static NSString *kCustomRefreshCellIdentifier = @"HGMainViewControllerCell";
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     
-    // Create button for the next view in the navigation controller hierarchy.
-    self.navigationItem.title = @"Custom";
-    UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Default" style:UIBarButtonItemStylePlain target:self action:@selector(nextView)];
-    self.navigationItem.rightBarButtonItem = rightButton;
+    self.navigationItem.title = @"Default";
     
-    [self setRefreshTarget:self action:@selector(updateCalendar)];
-    [self beginRefresh];
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(updateCalendar) forControlEvents:UIControlEventValueChanged];
+
 }
 
-- (void)nextView
+// Programmatically call the "pull to refresh" control. Only appears to work in the viewDidAppear method.
+// See http://stackoverflow.com/questions/17930730/uirefreshcontrol-on-viewdidload
+- (void) viewDidAppear:(BOOL)animated
 {
-    [self.navigationController pushViewController:[[HGDefaultRefreshViewController alloc] init] animated:YES];
+    [super viewDidAppear: animated];
+    
+    // Programmatically call the "pull to refresh" control.
+    [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:NO];
+    [self.refreshControl beginRefreshing];
+    [self updateCalendar];
 }
 
-#pragma mark - Google Calendar updates
-
-// Start an asynchronous fetch of calendar events. Shows a pull-down spinner while updating and shows an error notification in the spnner window if updating fails.
 - (void)updateCalendar
 {
     NSString *apiKey = @"AIzaSyBNDX9ZvvrzcY75UEKuUpewPOwSn9BB5gs";
     NSString *baseUrl = @"https://www.googleapis.com/calendar/v3/calendars/uqug2vcr34i6ao749n5vfb8vks@group.calendar.google.com/events?key=";
     NSString *fullUrl = [baseUrl stringByAppendingString:apiKey];
-
+    
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
     [manager GET:fullUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         [self updateSuccess:responseObject];
+        [self.refreshControl endRefreshing];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        [self endRefreshError];
+        [self.refreshControl endRefreshing];
     }];
+
 }
 
 - (void)updateSuccess:(NSDictionary *)apiResponse
@@ -65,7 +68,7 @@ static NSString *kCustomRefreshCellIdentifier = @"HGMainViewControllerCell";
         return ((NSString *)event[@"summary"]).length > 0 && ![((NSString *)event[@"status"]) isEqualToString:@"cancelled"];
     }]];
     [self.tableView reloadData];
-    [self endRefreshSuccess];
+    [self.refreshControl endRefreshing];
 }
 
 #pragma mark - Table view data source
@@ -82,12 +85,12 @@ static NSString *kCustomRefreshCellIdentifier = @"HGMainViewControllerCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCustomRefreshCellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kDefaultRefreshCellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCustomRefreshCellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kDefaultRefreshCellIdentifier];
     }
     cell.textLabel.text = self.events[indexPath.row][@"summary"];
-
+    
     return cell;
 }
 

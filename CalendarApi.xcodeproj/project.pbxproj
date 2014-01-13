@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4971A742187C3532002FF23C /* HGMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4971A741187C3532002FF23C /* HGMainViewController.m */; };
 		49B76B181882D68200B1A26F /* HGRefreshTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B76B171882D68200B1A26F /* HGRefreshTableViewController.m */; };
+		49B76B1B18835F4A00B1A26F /* HGDefaultRefreshViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B76B1A18835F4A00B1A26F /* HGDefaultRefreshViewController.m */; };
 		49EA8DCE187B88490027708C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EA8DCD187B88490027708C /* Foundation.framework */; };
 		49EA8DD0187B88490027708C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EA8DCF187B88490027708C /* CoreGraphics.framework */; };
 		49EA8DD2187B88490027708C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EA8DD1187B88490027708C /* UIKit.framework */; };
@@ -40,6 +41,8 @@
 		4971A741187C3532002FF23C /* HGMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGMainViewController.m; sourceTree = "<group>"; };
 		49B76B161882D68200B1A26F /* HGRefreshTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HGRefreshTableViewController.h; sourceTree = "<group>"; };
 		49B76B171882D68200B1A26F /* HGRefreshTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGRefreshTableViewController.m; sourceTree = "<group>"; };
+		49B76B1918835F4A00B1A26F /* HGDefaultRefreshViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HGDefaultRefreshViewController.h; sourceTree = "<group>"; };
+		49B76B1A18835F4A00B1A26F /* HGDefaultRefreshViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGDefaultRefreshViewController.m; sourceTree = "<group>"; };
 		49EA8DCA187B88490027708C /* CalendarApi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CalendarApi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49EA8DCD187B88490027708C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		49EA8DCF187B88490027708C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -123,6 +126,8 @@
 				49EA8DDD187B88490027708C /* HGAppDelegate.m */,
 				4971A740187C3532002FF23C /* HGMainViewController.h */,
 				4971A741187C3532002FF23C /* HGMainViewController.m */,
+				49B76B1918835F4A00B1A26F /* HGDefaultRefreshViewController.h */,
+				49B76B1A18835F4A00B1A26F /* HGDefaultRefreshViewController.m */,
 				49B76B161882D68200B1A26F /* HGRefreshTableViewController.h */,
 				49B76B171882D68200B1A26F /* HGRefreshTableViewController.m */,
 				49EA8DDF187B88490027708C /* Images.xcassets */,
@@ -294,6 +299,7 @@
 				4971A742187C3532002FF23C /* HGMainViewController.m in Sources */,
 				49B76B181882D68200B1A26F /* HGRefreshTableViewController.m in Sources */,
 				49EA8DDA187B88490027708C /* main.m in Sources */,
+				49B76B1B18835F4A00B1A26F /* HGDefaultRefreshViewController.m in Sources */,
 				49EA8DDE187B88490027708C /* HGAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
