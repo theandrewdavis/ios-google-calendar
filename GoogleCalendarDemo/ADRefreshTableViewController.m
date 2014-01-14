@@ -8,18 +8,17 @@
 
 #import "ADRefreshTableViewController.h"
 
-static CGFloat kMarginY = 8;
-static CGFloat kIconSize = 32;
-static CGFloat kAnimationTime = 0.3;
-static CGFloat kAnimationDelay = 1.5;
+static CGFloat kRefreshControlMarginY = 8;
+static CGFloat kRefreshControlIconSize = 32;
+static CGFloat kRefreshControlAnimationTime = 0.3;
+static CGFloat kRefreshControlAnimationDelay = 1.5;
 
 @interface ADRefreshTableViewController ()
 @property (strong, nonatomic) UIView *refreshView;
 @property (nonatomic) CGFloat refreshViewHeight;
-@property (strong, nonatomic) UILabel *label;
-@property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) UILabel *refreshLabel;
+@property (strong, nonatomic) UIImageView *refreshImageView;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicator;
-@property (strong, nonatomic) NSMutableDictionary *strings;
 @property (nonatomic) ADRefreshState state;
 @property (weak, nonatomic) id target;
 @property (nonatomic) SEL action;
@@ -32,10 +31,10 @@ static CGFloat kAnimationDelay = 1.5;
     self = [super init];
     if (self) {
         self.state = ADRefreshStateHidden;
-        self.strings = [[NSMutableDictionary alloc] init];
-        [self setText:@"Loading..." forRefreshState:ADRefreshStateLoading];
-        [self setText:@"Update complete" forRefreshState:ADRefreshStateSuccess];
-        [self setText:@"Update failed" forRefreshState:ADRefreshStateError];
+        self.noResultsText = @"No results found.";
+        self.loadingStateText = @"Loading...";
+        self.successStateText = @"Update complete";
+        self.errorStateText = @"Update failed";
         self.successImage = [UIImage imageNamed:@"Checkmark"];
         self.errorImage = [UIImage imageNamed:@"Close"];
     }
@@ -46,32 +45,35 @@ static CGFloat kAnimationDelay = 1.5;
     [super viewDidLoad];
 
     // Create success and error image views.
-    self.imageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width / 2 - kIconSize / 2, kMarginY, kIconSize, kIconSize)];
-    self.imageView.hidden = YES;
+    CGFloat refreshImageViewX = self.tableView.frame.size.width / 2 - kRefreshControlIconSize / 2;
+    self.refreshImageView = [[UIImageView alloc] initWithFrame:CGRectMake(refreshImageViewX, kRefreshControlMarginY, kRefreshControlIconSize, kRefreshControlIconSize)];
+    self.refreshImageView.hidden = YES;
 
     // Create activity indicator.
     self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    self.activityIndicator.frame = self.imageView.frame;
+    self.activityIndicator.frame = self.refreshImageView.frame;
 
     // Create text label.
-    NSString *labelText = [self textForRefreshState:ADRefreshStateLoading];
-    UIFont *labelFont = [UIFont systemFontOfSize:12];
-    CGFloat labelHeight = [labelText sizeWithFont:labelFont constrainedToSize:CGSizeMake(self.tableView.frame.size.width, CGFLOAT_MAX)].height;
-    CGFloat labelY = self.imageView.frame.origin.y + self.imageView.frame.size.height + kMarginY / 2;
-    self.label = [[UILabel alloc] initWithFrame:CGRectMake(0, labelY, self.tableView.frame.size.width, labelHeight)];
-    self.label.text = labelText;
-    self.label.font = labelFont;
-    self.label.textColor = [UIColor grayColor];
-    self.label.textAlignment = NSTextAlignmentCenter;
+    self.refreshLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.refreshLabel.text = self.loadingStateText;
+    self.refreshLabel.font = [UIFont systemFontOfSize:12];
+    self.refreshLabel.textColor = [UIColor grayColor];
+    self.refreshLabel.textAlignment = NSTextAlignmentCenter;
+    CGFloat refreshLabelY = self.refreshImageView.frame.origin.y + self.refreshImageView.frame.size.height + kRefreshControlMarginY / 2;
+    CGFloat refreshLabelHeight = [self.refreshLabel.text sizeWithFont:self.refreshLabel.font constrainedToSize:self.tableView.frame.size].height;
+    self.refreshLabel.frame = CGRectMake(0, refreshLabelY, self.tableView.frame.size.width, refreshLabelHeight);
 
     // Create refresh control view.
-    self.refreshViewHeight = labelY + labelHeight + kMarginY;
+    self.refreshViewHeight = refreshLabelY + refreshLabelHeight + kRefreshControlMarginY;
     self.refreshView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.refreshViewHeight)];
     [self.refreshView addSubview:self.activityIndicator];
-    [self.refreshView addSubview:self.imageView];
-    [self.refreshView addSubview:self.label];
+    [self.refreshView addSubview:self.refreshImageView];
+    [self.refreshView addSubview:self.refreshLabel];
     self.refreshView.hidden = YES;
-    self.tableView.backgroundView = self.refreshView;
+
+    // Add the "No results" label and the refresh control view to the table background.
+    self.tableView.backgroundView = [[UIView alloc] initWithFrame:self.tableView.frame];
+    [self.tableView.backgroundView addSubview:self.refreshView];
 }
 
 // Trigger a refresh when the table is pulled to reveal the refresh header.
@@ -87,14 +89,6 @@ static CGFloat kAnimationDelay = 1.5;
 - (void)setRefreshTarget:(id)target action:(SEL)action {
     self.target = target;
     self.action = action;
-}
-
--(void)setText:(NSString *)text forRefreshState:(ADRefreshState)state {
-    self.strings[[NSNumber numberWithInt:state]] = text;
-}
-
--(NSString *)textForRefreshState:(ADRefreshState)state {
-    return self.strings[[NSNumber numberWithInt:state]];
 }
 
 #pragma mark -
@@ -119,37 +113,38 @@ static CGFloat kAnimationDelay = 1.5;
 
 // Slide the refresh control to the given height by manipulating the table's contentInset.
 - (void)animateTableViewInsetToHeight:(CGFloat)height completion:(void (^)(BOOL finished))completion {
-    [UIView animateWithDuration:kAnimationTime delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+    [UIView animateWithDuration:kRefreshControlAnimationTime delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
         self.tableView.contentInset = UIEdgeInsetsMake(height, 0, 0, 0);
     } completion:completion];
 }
 
 - (void)transitionToState:(ADRefreshState)state {
     self.state = state;
-    self.label.text = [self textForRefreshState:state];
     switch (state) {
         case ADRefreshStateHidden: {
             self.refreshView.hidden = YES;
             [self.activityIndicator stopAnimating];
             self.activityIndicator.hidden = NO;
-            self.imageView.hidden = YES;
+            self.refreshImageView.hidden = YES;
             [self animateTableViewInsetToHeight:0 completion:nil];
             break;
         }
         case ADRefreshStateLoading: {
+            self.refreshLabel.text = self.loadingStateText;
             [self.activityIndicator startAnimating];
             self.activityIndicator.hidden = NO;
-            self.imageView.hidden = YES;
+            self.refreshImageView.hidden = YES;
             self.refreshView.hidden = NO;
             [self animateTableViewInsetToHeight:self.refreshViewHeight completion:nil];
             break;
         }
         case ADRefreshStateSuccess:
         case ADRefreshStateError: {
+            self.refreshLabel.text = (state == ADRefreshStateSuccess) ? self.successStateText : self.errorStateText;
+            self.refreshImageView.image = (state == ADRefreshStateSuccess) ? self.successImage : self.errorImage;
+            self.refreshImageView.hidden = NO;
             [self.activityIndicator stopAnimating];
             self.activityIndicator.hidden = YES;
-            self.imageView.image = (state == ADRefreshStateSuccess) ? self.successImage : self.errorImage;
-            self.imageView.hidden = NO;
             self.refreshView.hidden = NO;
             [self animateTableViewInsetToHeight:self.refreshViewHeight completion:nil];
 
@@ -157,7 +152,7 @@ static CGFloat kAnimationDelay = 1.5;
             // method animateWithDuration:delay:options:animations:completion: to cause the delay instead of dispatch_after
             // seems to interfere with the scroll inertia of the containing scroll view causing the message to stop in the
             // wrong place when the refresh control is pulled very far down the screen.
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kAnimationDelay * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRefreshControlAnimationDelay * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 self.refreshView.hidden = YES;
                 [self animateTableViewInsetToHeight:0 completion:^(BOOL finished) {
                     [self transitionToState:ADRefreshStateHidden];

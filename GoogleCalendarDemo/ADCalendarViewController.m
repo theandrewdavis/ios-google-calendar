@@ -12,7 +12,7 @@
 static NSString *kCustomRefreshCellIdentifier = @"ADCalendarViewControllerCell";
 
 @interface ADCalendarViewController ()
-@property (nonatomic, strong) NSArray *events;
+@property (strong, nonatomic) NSArray *events;
 @end
 
 @implementation ADCalendarViewController

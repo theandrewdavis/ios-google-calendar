@@ -16,10 +16,13 @@ typedef enum {
 }  ADRefreshState;
 
 @interface ADRefreshTableViewController : UITableViewController
+@property (strong, nonatomic) NSString *noResultsText;
+@property (strong, nonatomic) NSString *loadingStateText;
+@property (strong, nonatomic) NSString *successStateText;
+@property (strong, nonatomic) NSString *errorStateText;
 @property (strong, nonatomic) UIImage *successImage;
 @property (strong, nonatomic) UIImage *errorImage;
 
-- (void)setText:(NSString *)text forRefreshState:(ADRefreshState)state;
 - (void)setRefreshTarget:(id)target action:(SEL)action;
 - (void)beginRefreshing;
 - (void)endRefreshingSuccess;
