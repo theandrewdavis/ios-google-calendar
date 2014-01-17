@@ -8,6 +8,6 @@
 
 #import "ADRefreshTableViewController.h"
 
-@interface ADCalendarViewController : ADRefreshTableViewController
+@interface ADCalendarViewController : ADRefreshTableViewController <NSFetchedResultsControllerDelegate>
 
 @end
