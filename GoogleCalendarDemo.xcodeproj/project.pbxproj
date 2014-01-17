@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4906A86818839C9C000FFEE8 /* ADRefreshTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4906A86718839C9C000FFEE8 /* ADRefreshTableViewController.m */; };
+		4906A86818839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4906A86718839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.m */; };
 		4906A8781884AC7E000FFEE8 /* ADCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4906A8771884AC7E000FFEE8 /* ADCalendarViewController.m */; };
 		4945E5251886043E0004CF3C /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4945E5231886043E0004CF3C /* Model.xcdatamodeld */; };
 		4945E5271886054A0004CF3C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4945E5261886054A0004CF3C /* CoreData.framework */; };
 		4945E52A1886095C0004CF3C /* ADManagedObjectContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 4945E5291886095C0004CF3C /* ADManagedObjectContext.m */; };
+		4945E5301888B47F0004CF3C /* ADCoreDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4945E52F1888B47F0004CF3C /* ADCoreDataTableViewController.m */; };
 		4950F70E18839B610030AD3E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4950F70D18839B610030AD3E /* Foundation.framework */; };
 		4950F71018839B610030AD3E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4950F70F18839B610030AD3E /* CoreGraphics.framework */; };
 		4950F71218839B610030AD3E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4950F71118839B610030AD3E /* UIKit.framework */; };
@@ -38,14 +39,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		4906A86618839C9C000FFEE8 /* ADRefreshTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADRefreshTableViewController.h; sourceTree = "<group>"; };
-		4906A86718839C9C000FFEE8 /* ADRefreshTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADRefreshTableViewController.m; sourceTree = "<group>"; };
+		4906A86618839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADRefreshCoreDataTableViewController.h; sourceTree = "<group>"; };
+		4906A86718839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADRefreshCoreDataTableViewController.m; sourceTree = "<group>"; };
 		4906A8761884AC7E000FFEE8 /* ADCalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADCalendarViewController.h; sourceTree = "<group>"; };
 		4906A8771884AC7E000FFEE8 /* ADCalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADCalendarViewController.m; sourceTree = "<group>"; };
 		4945E5241886043E0004CF3C /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		4945E5261886054A0004CF3C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		4945E5281886095C0004CF3C /* ADManagedObjectContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADManagedObjectContext.h; sourceTree = "<group>"; };
 		4945E5291886095C0004CF3C /* ADManagedObjectContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADManagedObjectContext.m; sourceTree = "<group>"; };
+		4945E52E1888B47F0004CF3C /* ADCoreDataTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADCoreDataTableViewController.h; sourceTree = "<group>"; };
+		4945E52F1888B47F0004CF3C /* ADCoreDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADCoreDataTableViewController.m; sourceTree = "<group>"; };
 		4950F70A18839B610030AD3E /* GoogleCalendarDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoogleCalendarDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4950F70D18839B610030AD3E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4950F70F18839B610030AD3E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -132,8 +135,10 @@
 				4950F71D18839B610030AD3E /* ADAppDelegate.m */,
 				4906A8761884AC7E000FFEE8 /* ADCalendarViewController.h */,
 				4906A8771884AC7E000FFEE8 /* ADCalendarViewController.m */,
-				4906A86618839C9C000FFEE8 /* ADRefreshTableViewController.h */,
-				4906A86718839C9C000FFEE8 /* ADRefreshTableViewController.m */,
+				4906A86618839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.h */,
+				4906A86718839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.m */,
+				4945E52E1888B47F0004CF3C /* ADCoreDataTableViewController.h */,
+				4945E52F1888B47F0004CF3C /* ADCoreDataTableViewController.m */,
 				4945E5281886095C0004CF3C /* ADManagedObjectContext.h */,
 				4945E5291886095C0004CF3C /* ADManagedObjectContext.m */,
 				4945E5231886043E0004CF3C /* Model.xcdatamodeld */,
@@ -303,9 +308,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4906A86818839C9C000FFEE8 /* ADRefreshTableViewController.m in Sources */,
+				4906A86818839C9C000FFEE8 /* ADRefreshCoreDataTableViewController.m in Sources */,
 				4945E52A1886095C0004CF3C /* ADManagedObjectContext.m in Sources */,
 				4950F71A18839B610030AD3E /* main.m in Sources */,
+				4945E5301888B47F0004CF3C /* ADCoreDataTableViewController.m in Sources */,
 				4945E5251886043E0004CF3C /* Model.xcdatamodeld in Sources */,
 				4950F71E18839B610030AD3E /* ADAppDelegate.m in Sources */,
 				4906A8781884AC7E000FFEE8 /* ADCalendarViewController.m in Sources */,

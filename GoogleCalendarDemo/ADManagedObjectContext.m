@@ -28,7 +28,8 @@
     return context;
 }
 
-+ (void)updateEvents:(NSArray *)newEvents {
+// TODO: Fix today to actually be today.
++ (void)updateEvents:(NSArray *)events {
     static NSDateFormatter *dayFormatter, *timeFormatter;
     if (!dayFormatter || !timeFormatter) {
         dayFormatter = [[NSDateFormatter alloc] init];
@@ -39,29 +40,49 @@
 
     NSManagedObjectContext *context = [ADManagedObjectContext sharedContext];
     [context performBlock:^{
-        // Delete all existing events.
-        NSArray *oldEvents = [context executeFetchRequest:[[NSFetchRequest alloc] initWithEntityName:@"Event"] error:nil];
+        // Add all new events.
+        for (NSDictionary *eventData in events) {
+            // Find an event if it is already stored or create it otherwise.
+            NSManagedObject *event;
+            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Event"];
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"googleid == %@", eventData[@"id"]];
+            NSArray *results = [context executeFetchRequest:fetchRequest error:nil];
+            event = (results.count > 0) ? results[0] : [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:context];
+
+            // Find the start date of the event.
+            NSDate *date;
+            if ([eventData[@"start"] objectForKey:@"date"]) {
+                date = [dayFormatter dateFromString:eventData[@"start"][@"date"]];
+            } else if ([eventData[@"start"] objectForKey:@"dateTime"]) {
+                date = [timeFormatter dateFromString:eventData[@"start"][@"dateTime"]];
+            }
+
+            // Update event properties.
+            [event setValue:eventData[@"id"] forKey:@"googleid"];
+            [event setValue:eventData[@"summary"] forKey:@"summary"];
+            [event setValue:date forKey:@"date"];
+
+            // Delete cancelled events.
+            if ([eventData[@"status"] isEqualToString:@"cancelled"]) {
+                [context deleteObject:event];
+            }
+        }
+
+        // Delete old events.
+        NSDate *today = [[NSDate date] dateByAddingTimeInterval:-1 * 60 * 60 * 24 * 365];
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Event"];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date < %@", today];
+        NSArray *oldEvents = [context executeFetchRequest:fetchRequest error:nil];
         for (NSManagedObject *oldEvent in oldEvents) {
             [context deleteObject:oldEvent];
         }
 
-        // Add all new events.
-        for (NSDictionary *eventData in newEvents) {
-            NSManagedObject *newEvent = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:context];
-            [newEvent setValue:eventData[@"summary"] forKey:@"summary"];
-            [newEvent setValue:eventData[@"id"] forKey:@"googleid"];
-            if ([eventData[@"start"] objectForKey:@"date"]) {
-                [newEvent setValue:[dayFormatter dateFromString:eventData[@"start"][@"date"]] forKey:@"date"];
-            } else if ([eventData[@"start"] objectForKey:@"dateTime"]) {
-                [newEvent setValue:[timeFormatter dateFromString:eventData[@"start"][@"dateTime"]] forKey:@"date"];
-            }
-        }
         [context save:nil];
     }];
 }
 
 // TODO: Adjust this to the current year starting today.
-+ (NSFetchedResultsController *)eventResultsController {
++ (NSFetchedResultsController *)createEventResultsController {
     static NSDateFormatter *dateFormatter;
     if (!dateFormatter) {
         dateFormatter = [[NSDateFormatter alloc] init];

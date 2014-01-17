@@ -11,7 +11,7 @@
 @interface ADManagedObjectContext : NSObject
 
 + (NSManagedObjectContext *)sharedContext;
-+ (void)updateEvents:(NSArray *)newEvents;
-+ (NSFetchedResultsController *)eventResultsController;
++ (void)updateEvents:(NSArray *)events;
++ (NSFetchedResultsController *)createEventResultsController;
 
 @end

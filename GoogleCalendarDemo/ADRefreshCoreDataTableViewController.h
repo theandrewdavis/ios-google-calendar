@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ADCoreDataTableViewController.h"
 
 typedef enum {
     ADRefreshStateHidden = 0,
@@ -15,7 +16,7 @@ typedef enum {
     ADRefreshStateError
 }  ADRefreshState;
 
-@interface ADRefreshTableViewController : UITableViewController
+@interface ADRefreshCoreDataTableViewController : ADCoreDataTableViewController
 @property (strong, nonatomic) NSString *noResultsText;
 @property (strong, nonatomic) NSString *loadingStateText;
 @property (strong, nonatomic) NSString *successStateText;

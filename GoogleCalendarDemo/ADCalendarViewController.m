@@ -16,6 +16,14 @@
 
 @implementation ADCalendarViewController
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        self.coreDataDelegate = self;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -25,11 +33,6 @@
     }
 
     self.navigationItem.title = @"Custom";
-
-    self.eventResultsController = [ADManagedObjectContext eventResultsController];
-    self.eventResultsController.delegate = self;
-    [self.eventResultsController performFetch:nil];
-
     [self setRefreshTarget:self action:@selector(updateCalendar)];
     [self beginRefreshing];
 
@@ -45,89 +48,26 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
     [manager GET:fullUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        [self updateSuccess:responseObject];
+        [ADManagedObjectContext updateEvents:responseObject[@"items"]];
+        [self endRefreshingSuccess];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         [self endRefreshingError];
     }];
 }
 
-- (void)updateSuccess:(NSDictionary *)apiResponse
-{
-    NSArray *events = [apiResponse[@"items"] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id event, NSDictionary *bindings) {
-        return ((NSString *)event[@"summary"]).length > 0 && ![((NSString *)event[@"status"]) isEqualToString:@"cancelled"];
-    }]];
-    NSLog(@"%@", events);
-    [ADManagedObjectContext updateEvents:events];
-
-    [self.tableView reloadData];
-    [self endRefreshingSuccess];
-}
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[self.eventResultsController.sections objectAtIndex:section] numberOfObjects];
-}
+#pragma mark ADCoreDateTableDelegate
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath*)indexPath {
-    cell.textLabel.text = [[self.eventResultsController objectAtIndexPath:indexPath] valueForKey:@"summary"];
+    NSManagedObject *event = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+    cell.textLabel.text = [event valueForKey:@"summary"];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *kCustomRefreshCellIdentifier = @"ADCalendarViewControllerCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCustomRefreshCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCustomRefreshCellIdentifier];
+- (NSFetchedResultsController *)fetchedResultsController {
+    static NSFetchedResultsController *fetchedResultsController;
+    if (!fetchedResultsController) {
+        fetchedResultsController = [ADManagedObjectContext createEventResultsController];
     }
-    [self configureCell:cell atIndexPath:indexPath];
-    return cell;
-}
-
-#pragma mark - NSFetchedResultsControllerDelegate
-
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    [self.tableView beginUpdates];
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    [self.tableView endUpdates];
-}
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
-    switch(type) {
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
-            break;
-
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
-            break;
-    }
-}
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
-    switch (type) {
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            break;
-
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            break;
-
-        case NSFetchedResultsChangeUpdate:
-            [self configureCell:[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
-            break;
-            
-        case NSFetchedResultsChangeMove:
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            break;
-    }
+    return fetchedResultsController;
 }
 
 @end

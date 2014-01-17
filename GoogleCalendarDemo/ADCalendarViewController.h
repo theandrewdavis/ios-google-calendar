@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 Andrew Davis. All rights reserved.
 //
 
-#import "ADRefreshTableViewController.h"
+#import <UIKit/UIKit.h>
+#import "ADRefreshCoreDataTableViewController.h"
 
-@interface ADCalendarViewController : ADRefreshTableViewController <NSFetchedResultsControllerDelegate>
+@interface ADCalendarViewController : ADRefreshCoreDataTableViewController <ADCoreDateTableDelegate>
 
 @end
