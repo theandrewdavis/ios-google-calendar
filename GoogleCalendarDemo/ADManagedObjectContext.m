@@ -28,18 +28,17 @@
     return context;
 }
 
-// TODO: Fix today to actually be today.
 + (void)updateEvents:(NSArray *)events {
     static NSDateFormatter *dayFormatter, *timeFormatter;
     if (!dayFormatter || !timeFormatter) {
         dayFormatter = [[NSDateFormatter alloc] init];
-        dayFormatter.dateFormat = @"yyyy-mm-dd";
+        dayFormatter.dateFormat = @"yyyy-MM-dd";
         timeFormatter = [[NSDateFormatter alloc] init];
-        timeFormatter.dateFormat = @"yyyy-mm-dd'T'HH:mm:ssZZZZZ";
+        timeFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZZZZZ";
     }
 
     NSManagedObjectContext *context = [ADManagedObjectContext sharedContext];
-    [context performBlock:^{
+    [context performBlockAndWait:^{
         // Add all new events.
         for (NSDictionary *eventData in events) {
             // Find an event if it is already stored or create it otherwise.
@@ -51,9 +50,9 @@
 
             // Find the start date of the event.
             NSDate *date;
-            if ([eventData[@"start"] objectForKey:@"date"]) {
+            if (eventData[@"start"][@"date"]) {
                 date = [dayFormatter dateFromString:eventData[@"start"][@"date"]];
-            } else if ([eventData[@"start"] objectForKey:@"dateTime"]) {
+            } else if (eventData[@"start"][@"dateTime"]) {
                 date = [timeFormatter dateFromString:eventData[@"start"][@"dateTime"]];
             }
 
@@ -69,9 +68,8 @@
         }
 
         // Delete old events.
-        NSDate *today = [[NSDate date] dateByAddingTimeInterval:-1 * 60 * 60 * 24 * 365];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Event"];
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date < %@", today];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date < %@", [self today]];
         NSArray *oldEvents = [context executeFetchRequest:fetchRequest error:nil];
         for (NSManagedObject *oldEvent in oldEvents) {
             [context deleteObject:oldEvent];
@@ -81,29 +79,41 @@
     }];
 }
 
-// TODO: Adjust this to the current year starting today.
 + (NSFetchedResultsController *)createEventResultsController {
     static NSDateFormatter *dateFormatter;
     if (!dateFormatter) {
         dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"yyyy-mm-dd";
+        dateFormatter.dateFormat = @"yyyy-MM-dd";
     }
 
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-//    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:[NSDate date]];
-//    NSDate *today = [calendar dateFromComponents:components];
+    // Get the date of today and one year from today.
+    NSDate *today = [self today];
+    NSDate *nextYear = [self yearFromDate:today];
 
-    NSDate *today = [[NSDate date] dateByAddingTimeInterval:-1 * 60 * 60 * 24 * 365];
-    NSDateComponents *offsetComponents = [[NSDateComponents alloc] init];
-    offsetComponents.year = 1;
-    NSDate *nextYear = [calendar dateByAddingComponents:offsetComponents toDate:today options:0];
-    NSLog(@"Dates between %@ and %@", today, nextYear);
-
+    // The fetched results controller should show events in the next year sorted by date.
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Event"];
     request.predicate = [NSPredicate predicateWithFormat:@"(date >= %@) AND (date < %@)", today, nextYear];
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES]];
     NSManagedObjectContext *context = [ADManagedObjectContext sharedContext];
     return [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:@"EventCache"];
+}
+
+// Get the beginning of today's date in GMT.
++ (NSDate *)today {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    calendar.timeZone = [NSTimeZone timeZoneWithName:@"GMT"];
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:[NSDate date]];
+    NSLog(@"today is %@", [calendar dateFromComponents:components]);
+    return [calendar dateFromComponents:components];
+}
+
+// Get a date in GMT by adding one year to the given date.
++ (NSDate *)yearFromDate:(NSDate *)date {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    calendar.timeZone = [NSTimeZone timeZoneWithName:@"GMT"];
+    NSDateComponents *offsetComponents = [[NSDateComponents alloc] init];
+    offsetComponents.year = 1;
+    return [calendar dateByAddingComponents:offsetComponents toDate:date options:0];
 }
 
 @end
