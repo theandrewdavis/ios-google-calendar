@@ -51,11 +51,11 @@
 - (void)updateCalendar {
     NSString *calendarId = @"47ou48fasc70l0758i9lh76sr8@group.calendar.google.com";
     NSString *apiKey = @"AIzaSyCAkVQVwMzmPHxbaLUAqvb6dYUwjKU5qnM";
-    NSString *calendarUrl = [NSString stringWithFormat:@"https://www.googleapis.com/calendar/v3/calendars/%@/events?key=%@", calendarId, apiKey];
+    NSString *urlFormat = @"https://www.googleapis.com/calendar/v3/calendars/%@/events?key=%@&fields=items(id,start,summary)";
+    NSString *calendarUrl = [NSString stringWithFormat:urlFormat, calendarId, apiKey];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
     [manager GET:calendarUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//        NSLog(@"%@", responseObject);
         [ADManagedObjectContext updateEvents:responseObject[@"items"]];
         [self.refreshControl endRefreshing];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {

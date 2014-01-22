@@ -103,7 +103,6 @@
     NSCalendar *calendar = [NSCalendar currentCalendar];
     calendar.timeZone = [NSTimeZone timeZoneWithName:@"GMT"];
     NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:[NSDate date]];
-    NSLog(@"today is %@", [calendar dateFromComponents:components]);
     return [calendar dateFromComponents:components];
 }
 
