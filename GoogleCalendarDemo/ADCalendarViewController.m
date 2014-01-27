@@ -9,6 +9,7 @@
 #import "ADCalendarViewController.h"
 #import "AFNetworking.h"
 #import "ADManagedObjectContext.h"
+#import "ADCalendarEventCell.h"
 
 @interface ADCalendarViewController ()
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
@@ -16,17 +17,6 @@
 @end
 
 @implementation ADCalendarViewController
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        // Set up an NSFetchedResultsController to respond to changes in Core Data storage.
-        self.fetchedResultsController = [ADManagedObjectContext createEventResultsController];
-        self.fetchedResultsController.delegate = self;
-        [self.fetchedResultsController performFetch:nil];
-    }
-    return self;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -38,6 +28,11 @@
 
     // Add a navigation bar title.
     self.navigationItem.title = @"US Federal Holidays";
+
+    // Set up an NSFetchedResultsController to respond to changes in Core Data storage.
+    self.fetchedResultsController = [ADManagedObjectContext createEventResultsController];
+    self.fetchedResultsController.delegate = self;
+    [self.fetchedResultsController performFetch:nil];
 
     // Set up the refresh control and start a refresh action.
     self.refreshControl = [[UIRefreshControl alloc] init];
@@ -51,7 +46,7 @@
 - (void)updateCalendar {
     NSString *calendarId = @"47ou48fasc70l0758i9lh76sr8@group.calendar.google.com";
     NSString *apiKey = @"AIzaSyCAkVQVwMzmPHxbaLUAqvb6dYUwjKU5qnM";
-    NSString *urlFormat = @"https://www.googleapis.com/calendar/v3/calendars/%@/events?key=%@&fields=items(id,start,summary)";
+    NSString *urlFormat = @"https://www.googleapis.com/calendar/v3/calendars/%@/events?key=%@&fields=items(id,start,summary,status)";
     NSString *calendarUrl = [NSString stringWithFormat:urlFormat, calendarId, apiKey];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -65,7 +60,7 @@
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     NSManagedObject *event = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.text = [event valueForKey:@"summary"];
+    [(ADCalendarEventCell *)cell setSummary:[event valueForKey:@"summary"] andDate:[event valueForKey:@"date"]];
 }
 
 #pragma mark - UITableViewDataSource
@@ -82,7 +77,7 @@
     static NSString *cellIdentifier = @"ADCalendarViewControllerCellIdentifier";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+        cell = [[ADCalendarEventCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     [self configureCell:cell atIndexPath:indexPath];
     return cell;

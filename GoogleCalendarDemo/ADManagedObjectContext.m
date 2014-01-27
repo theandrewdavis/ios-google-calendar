@@ -10,6 +10,7 @@
 
 @implementation ADManagedObjectContext
 
+// Get or create a managed object context.
 + (NSManagedObjectContext *)sharedContext {
     static NSManagedObjectContext *context;
     if (!context) {
@@ -19,15 +20,14 @@
             NSString *applicationDocumentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
             NSURL *persistentStoreUrl = [NSURL fileURLWithPath:[applicationDocumentsDirectory stringByAppendingPathComponent:@"store.sqlite"]];
             NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
-
-            NSError *error;
-            [persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:persistentStoreUrl options:nil error:&error];
+            [persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:persistentStoreUrl options:nil error:nil];
             context.persistentStoreCoordinator = persistentStoreCoordinator;
         }];
     }
     return context;
 }
 
+// Parse a dictionary of events and add new events to the Core Data store.
 + (void)updateEvents:(NSArray *)events {
     static NSDateFormatter *dayFormatter, *timeFormatter;
     if (!dayFormatter || !timeFormatter) {
@@ -79,6 +79,7 @@
     }];
 }
 
+// Create a fetched results controller to get events that will occur in the next year.
 + (NSFetchedResultsController *)createEventResultsController {
     static NSDateFormatter *dateFormatter;
     if (!dateFormatter) {

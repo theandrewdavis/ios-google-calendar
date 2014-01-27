@@ -23,6 +23,7 @@
 		4950F72918839B610030AD3E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4950F71118839B610030AD3E /* UIKit.framework */; };
 		4950F73118839B610030AD3E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4950F72F18839B610030AD3E /* InfoPlist.strings */; };
 		4950F73318839B610030AD3E /* GoogleCalendarDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4950F73218839B610030AD3E /* GoogleCalendarDemoTests.m */; };
+		49BBC27318908E6900D209DB /* ADCalendarEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BBC27218908E6900D209DB /* ADCalendarEventCell.m */; };
 		AA69CA33C1F447D1890FBA1A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B55AC4177C114FCEA0FE6666 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,8 @@
 		4950F72E18839B610030AD3E /* GoogleCalendarDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleCalendarDemoTests-Info.plist"; sourceTree = "<group>"; };
 		4950F73018839B610030AD3E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4950F73218839B610030AD3E /* GoogleCalendarDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoogleCalendarDemoTests.m; sourceTree = "<group>"; };
+		49BBC27118908E6900D209DB /* ADCalendarEventCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADCalendarEventCell.h; sourceTree = "<group>"; };
+		49BBC27218908E6900D209DB /* ADCalendarEventCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADCalendarEventCell.m; sourceTree = "<group>"; };
 		B55AC4177C114FCEA0FE6666 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2DD7D3F12A7404899E6C768 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -129,6 +132,8 @@
 				4950F71D18839B610030AD3E /* ADAppDelegate.m */,
 				4906A8761884AC7E000FFEE8 /* ADCalendarViewController.h */,
 				4906A8771884AC7E000FFEE8 /* ADCalendarViewController.m */,
+				49BBC27118908E6900D209DB /* ADCalendarEventCell.h */,
+				49BBC27218908E6900D209DB /* ADCalendarEventCell.m */,
 				4945E5281886095C0004CF3C /* ADManagedObjectContext.h */,
 				4945E5291886095C0004CF3C /* ADManagedObjectContext.m */,
 				4945E5231886043E0004CF3C /* Model.xcdatamodeld */,
@@ -303,6 +308,7 @@
 				4945E5251886043E0004CF3C /* Model.xcdatamodeld in Sources */,
 				4950F71E18839B610030AD3E /* ADAppDelegate.m in Sources */,
 				4906A8781884AC7E000FFEE8 /* ADCalendarViewController.m in Sources */,
+				49BBC27318908E6900D209DB /* ADCalendarEventCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
