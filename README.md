@@ -41,9 +41,10 @@ if (!dayFormatter || !timeFormatter) {
 for (NSDictionary *eventData in events) {
     NSDate *date;
     if (eventData[@"start"][@"date"]) {
-    date = [dayFormatter dateFromString:eventData[@"start"][@"date"]];
+        date = [dayFormatter dateFromString:eventData[@"start"][@"date"]];
     } else if (eventData[@"start"][@"dateTime"]) {
-    date = [timeFormatter dateFromString:eventData[@"start"][@"dateTime"]];
+        date = [timeFormatter dateFromString:eventData[@"start"][@"dateTime"]];
+    }
     NSLog("%@", date);
 }
 ````
